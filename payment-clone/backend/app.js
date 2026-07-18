@@ -1,0 +1,35 @@
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./docs/swagger");
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const morgan = require('morgan');
+const crypto = require('crypto');
+const { clientUrls, nodeEnv } = require('./config/env');
+const { apiRateLimiter, authRateLimiter } = require('./config/rateLimiters');
+const healthRoutes = require('./routes/healthRoutes');
+const authRoutes = require('./routes/authRoutes');
+const protectedRoutes = require('./routes/protectedRoutes');
+const userRoutes = require('./routes/userRoutes');
+const notFound = require('./middleware/notFound');
+const errorHandler = require('./middleware/errorHandler');
+
+const app = express();
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+app.use((req, res, next) => { req.id = crypto.randomUUID(); res.setHeader('X-Request-Id', req.id); next(); });
+app.use(helmet());
+app.use(cors({ origin: (origin, callback) => callback(null, !origin || clientUrls.includes(origin)), methods: ['GET', 'POST', 'PUT'], allowedHeaders: ['Content-Type', 'Authorization'] }));
+if (nodeEnv !== 'test') app.use(morgan(nodeEnv === 'production' ? 'combined' : 'dev'));
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use('/api', apiRateLimiter);
+app.use('/api/health', healthRoutes);
+app.use('/api/auth', authRateLimiter, authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/protected', protectedRoutes);
+app.use(notFound);
+app.use(errorHandler);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+module.exports = app;

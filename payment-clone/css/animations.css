@@ -1,0 +1,1 @@
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}.reveal.show{opacity:1;transform:none}.delay-2{transition-delay:.15s}@keyframes float{50%{transform:translateY(-9px)}}@keyframes pulse{50%{box-shadow:0 0 0 8px #00c89710}}.success{animation:float 3s ease-in-out infinite}.dash-dot{animation:pulse 2s infinite}
