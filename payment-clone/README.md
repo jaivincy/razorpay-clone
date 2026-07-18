@@ -26,7 +26,7 @@ A modern and responsive payment platform website inspired by Razorpay, built usi
 ### Responsive Design
 
 #### Tablet View
-![iPad Responsive](./screenshots/ipad-responsive.png)
+![iPad Responsive](./screenshots/ipad-responsive-check.png)
 
 #### Mobile View
 ![Mobile Responsive](./screenshots/mobile-responsive.png)
